@@ -1,6 +1,15 @@
 a {
   color: #00B7FF;
 }
+
 #main_map{
   height: 600px;
+}
+
+body {
+  padding: 50px;
+}
+
+body {
+  padding-top: 5rem;
 }
