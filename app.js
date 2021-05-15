@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const Usuario = require('./models/usuario');
+const Token = require('./models/token');
 
 var indexRouter = require('./routes/index');
 var usuariosRouter = require('./routes/usuarios');
@@ -53,6 +55,56 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+app.get('/forgotPassword', function(req, res){
+  res.render('session/forgotPassword');
+
+});
+
+app.post('/forgotPassword', function(req, res){
+  Usuario.findOne({email: req.body.email}, function(err, usuario){
+    if(!usuario)
+      return res.render('session/forgotPassword', {info: {message: 'No coincide el email con ningún usuario existente'}});
+
+    usuario.resetPassword(function(err){
+      if(err)
+        return next(err);
+      console.log('session/forgotPasswordMessage');
+    });
+    
+    res.render('session/forgotPasswordMessage');
+  });
+});
+
+app.get('/resetPassword/:token', function(req,res,next){
+  Token.findOne({token: req.params.token}, function(err, token){
+    if(!token)
+      return res.status(400).send({type: 'not-verified', msg: 'No existe un usuario asociado al token. Verifique que su token no haya expirado'});
+
+    Usuario.findById(token._userId, function(err,usuario){
+      if(!usuario)
+        return res.status(400).send({msg: 'No existe un usuario asociado al token.'});
+      res.render('session/resetPassword', {errors: {}, usuario:usuario});
+    });
+  });
+});
+
+app.post('/resetPassword', function(req,res){
+  if(req.body.password != req.body.confirm_password){
+    res.render('session/resetPassword', {errors: {confirm_password: {message: 'No coincide con el password ingresado'}}, usuario: new Usuario({email:req.body.email})});
+    return;
+  }
+
+  Usuario.findOne({email:req.body.email}, function(err, usuario){
+    usuario.password = req.body.password;
+    usuario.save(function(err){
+      if(err)
+        res.render('session/resetPassword', {errors: err.errors, usuario: new Usuario({email: req.body.email})});
+      else
+        res.redirect('/login');
+    });
+  });
 });
 
 module.exports = app;
