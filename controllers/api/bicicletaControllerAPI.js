@@ -1,5 +1,19 @@
 var Bicicleta = require('../../models/bicicleta');
 
+exports.validarUsuario = function (req, res, next) {
+    jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), function(err, decoded){
+      if (err) {
+        res.json({status:"error", message: err.message, data:null});
+      }else{
+  
+        req.body.userId = decoded.id;
+  
+        console.log('jwt verify: ' + decoded);
+  
+        next();
+      } 
+    });
+  }
 exports.bicicleta_list = function(req, res){
     res.status(200).json({
         bicicletas: Bicicleta.allBicis

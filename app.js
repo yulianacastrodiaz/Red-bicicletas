@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const passport = require('./config/passport');
 const session = require('express-session');
+const jwt = require('jsonwebtoken');
 
 const Usuario = require('./models/usuario');
 const Token = require('./models/token');
@@ -15,10 +16,14 @@ var tokenRouter = require('./routes/token');
 var bicicletasRouter = require('./routes/bicicletas');
 var bicicletasAPIRouter = require('./routes/api/bicicletas');
 var usuariosAPIRouter = require('./routes/api/usuarios');
+var authAPIRouter = require('./routes/api/auth');
 
 const store = new session.MemoryStore;
 
 var app = express();
+
+//clave y valor para validarUsuario
+app.set('secretKey', 'jwt_pwd_!!223344');
 app.use(session({
   cookie: { maxAge: 240*60*60*1000},
   store: store,
@@ -28,6 +33,7 @@ app.use(session({
 }));
 
 var mongoose = require('mongoose');
+const authControllerApi = require('./controllers/api/authControllerApi');
 
 var mongoDB = 'mongodb://localhost/red_bicicletas';
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true});
@@ -125,7 +131,9 @@ app.use('/usuarios', usuariosRouter);
 app.use('/token', tokenRouter);
 
 app.use('/bicicletas', loggedIn, bicicletasRouter);
-app.use('/api/bicicletas', bicicletasAPIRouter);
+
+app.use('/api/auth', authAPIRouter);
+app.use('/api/bicicletas', validarUsuario, bicicletasAPIRouter);
 app.use('/api/usuarios', usuariosAPIRouter);
 
 // catch 404 and forward to error handler
@@ -150,6 +158,21 @@ function loggedIn(req, res, next) {
   }else{
     console.log('usuario sin loguearse');
     res.redirect('/login');
-  }
+  };
+};
+
+function validarUsuario (req, res, next) {
+  jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), function(err, decoded){
+    if (err) {
+      res.json({status:"error", message: err.message, data:null});
+    }else{
+
+      req.body.userId = decoded.id;
+
+      console.log('jwt verify: ' + decoded);
+
+      next();
+    } 
+  });
 }
 module.exports = app;
