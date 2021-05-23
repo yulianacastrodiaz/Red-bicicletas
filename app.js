@@ -33,7 +33,7 @@ app.use(session({
 }));
 
 var mongoose = require('mongoose');
-const authControllerApi = require('./controllers/api/authControllerApi');
+
 
 var mongoDB = 'mongodb://localhost/red_bicicletas';
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true});
