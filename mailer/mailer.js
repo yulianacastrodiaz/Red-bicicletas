@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'production'){
             port: 587,
             auth: {
                 user: process.env.ethereal_user,
-                pass: process-env.ethereal_pwd
+                pass: process.env.ethereal_pwd
             }
         } 
     }

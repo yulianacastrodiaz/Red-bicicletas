@@ -55,6 +55,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.get('/login', function(req, res) {
   res.render('session/login');
 });
@@ -137,6 +138,10 @@ app.use('/bicicletas', loggedIn, bicicletasRouter);
 app.use('/api/auth', authAPIRouter);
 app.use('/api/bicicletas', validarUsuario, bicicletasAPIRouter);
 app.use('/api/usuarios', usuariosAPIRouter);
+
+app.use('/privacy_policy', function (req, res) {
+  res.sendFile('public/privacy_policy.html');
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
