@@ -47,13 +47,10 @@ app.use(session({
 }));
 
 var mongoose = require('mongoose');
-const { assert } = require('console');
-const { ok } = require('assert');
 
 
 //var mongoDB = 'mongodb://localhost/red_bicicletas';
-//mongodb+srv://admin:<password>@red-bicicletas.wmk1d.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
-var mongoDB = 'mongodb+srv://admin:hAzZoVtFYYzhFb9H@red-bicicletas.wmk1d.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+var mongoDB = process.env.MONGO_URI;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
@@ -164,8 +161,7 @@ app.use('/google51c624951281be76', function (req, res) {
 });
 
 app.get('/auth/google',
-  passport.authenticate('google', {
-    scope: [
+  passport.authenticate('google', {scope: [
       'https://www.googleapis.com/auth/plus.login',
       'https://www.googleapis.com/auth/plus.profile.emails.read']
   }));
