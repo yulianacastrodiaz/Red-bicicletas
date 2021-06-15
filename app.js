@@ -47,7 +47,8 @@ app.use(session({
 }));
 
 var mongoose = require('mongoose');
-
+const { assert } = require('console');
+const { ok } = require('assert');
 
 
 //var mongoDB = 'mongodb://localhost/red_bicicletas';
