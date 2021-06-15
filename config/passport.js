@@ -15,7 +15,7 @@ passport.use( new LocalStrategy(
 
             return done(null, usuario);
         });
-    }
+}
 ));
 
 passport.use(new GoogleStrategy({

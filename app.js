@@ -1,3 +1,4 @@
+require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -46,8 +47,7 @@ app.use(session({
 }));
 
 var mongoose = require('mongoose');
-const { assert } = require('console');
-const { ok } = require('assert');
+
 
 
 //var mongoDB = 'mongodb://localhost/red_bicicletas';
